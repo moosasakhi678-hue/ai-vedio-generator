@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Generator | Create Stunning Videos with AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: #fff;
+            overflow-x: hidden;
+            background: #0a0a0a;
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: brightness(0.4);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(10, 10, 10, 0.7), rgba(5, 5, 15, 0.9));
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            padding: 30px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo span {
+            color: #ff4d94;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: #ff4d94;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 5;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #ff4d94, #6a11cb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 18px 45px;
+            background: linear-gradient(45deg, #ff4d94, #6a11cb);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(106, 17, 203, 0.3);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(106, 17, 203, 0.5);
+        }
+
+        .features {
+            padding: 100px 0;
+            background: rgba(15, 15, 25, 0.8);
+            position: relative;
+            z-index: 5;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .section-title p {
+            color: #b0b0b0;
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ff4d94;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .feature-card p {
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        .prompts {
+            padding: 100px 0;
+            position: relative;
+            z-index: 5;
+        }
+
+        .prompts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .prompt-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .prompt-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+        }
+
+        .prompt-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .prompt-card p {
+            color: #b0b0b0;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .quality {
+            padding: 100px 0;
+            background: rgba(15, 15, 25, 0.8);
+            position: relative;
+            z-index: 5;
+        }
+
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .quality-item {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .quality-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #6a11cb;
+        }
+
+        .quality-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .quality-item p {
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        .contact {
+            padding: 100px 0;
+            position: relative;
+            z-index: 5;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-icon {
+            font-size: 1.8rem;
+            color: #ff4d94;
+        }
+
+        .contact-details h4 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .contact-details p {
+            color: #b0b0b0;
+        }
+
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            background: rgba(5, 5, 10, 0.9);
+            position: relative;
+            z-index: 5;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .developer {
+            font-size: 1.1rem;
+            color: #b0b0b0;
+            margin-top: 20px;
+        }
+
+        .developer span {
+            color: #ff4d94;
+            font-weight: 600;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 30, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #b0b0b0;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #ff4d94;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #ff4d94;
+        }
+
+        .select-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            margin-right: 15px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .select-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-play-circle"></i>
+                AI<span>VideoGen</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Create Stunning AI Videos</h1>
+        <p>Transform your ideas into breathtaking cinematic masterpieces with our advanced AI video generation technology.</p>
+        <button class="btn" id="startBtn">START GENERATING VIDEO</button>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Powerful Features</h2>
+                <p>Our AI video generator comes packed with features to bring your vision to life</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <h3>Cinematic Quality</h3>
+                    <p>Generate videos with Hollywood-level cinematic quality, complete with professional color grading and effects.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3>Artistic Styles</h3>
+                    <p>Choose from a variety of artistic styles to match your creative vision and brand identity.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                    <h3>Ultra HD Resolution</h3>
+                    <p>Create videos in stunning 720p to 4K Ultra HD resolution for the highest quality viewing experience.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prompts Section -->
+    <section class="prompts">
+        <div class="container">
+            <div class="section-title">
+                <h2>Ready-Made Prompts</h2>
+                <p>Get started quickly with our professionally crafted prompts</p>
+            </div>
+            <div class="prompts-grid">
+                <div class="prompt-card" data-prompt="A cinematic shot of a futuristic city at sunset with flying vehicles and neon lights, hyper-realistic, 8K resolution, cinematic lighting, detailed architecture">
+                    <h3>Futuristic City</h3>
+                    <p>A cinematic shot of a futuristic city at sunset with flying vehicles and neon lights.</p>
+                </div>
+                <div class="prompt-card" data-prompt="An artistic time-lapse of a forest changing through the four seasons, cinematic, hyper-detailed, atmospheric lighting, nature documentary style">
+                    <h3>Seasonal Forest</h3>
+                    <p>An artistic time-lapse of a forest changing through the four seasons.</p>
+                </div>
+                <div class="prompt-card" data-prompt="A realistic underwater scene with diverse marine life and coral reefs, cinematic wide shot, crystal clear water, vibrant colors, documentary style">
+                    <h3>Underwater World</h3>
+                    <p>A realistic underwater scene with diverse marine life and coral reefs.</p>
+                </div>
+                <div class="prompt-card" data-prompt="A cinematic drone shot flying over majestic mountain ranges at golden hour, hyper-realistic, 4K resolution, volumetric clouds, epic scale">
+                    <h3>Mountain Majesty</h3>
+                    <p>A cinematic drone shot flying over majestic mountain ranges at golden hour.</p>
+                </div>
+                <div class="prompt-card" data-prompt="An artistic depiction of a bustling medieval market street with detailed costumes and architecture, cinematic lighting, realistic textures, historical accuracy">
+                    <h3>Medieval Market</h3>
+                    <p>An artistic depiction of a bustling medieval market street with detailed costumes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quality Section -->
+    <section class="quality">
+        <div class="container">
+            <div class="section-title">
+                <h2>Unmatched Quality</h2>
+                <p>We deliver the highest quality videos tailored to your needs</p>
+            </div>
+            <div class="quality-grid">
+                <div class="quality-item">
+                    <div class="quality-icon">
+                        <i class="fas fa-hd-video"></i>
+                    </div>
+                    <h3>720p to 4K Ultra HD</h3>
+                    <p>Generate videos in resolutions from 720p all the way up to stunning 4K Ultra HD.</p>
+                </div>
+                <div class="quality-item">
+                    <div class="quality-icon">
+                        <i class="fas fa-theater-masks"></i>
+                    </div>
+                    <h3>Realistic & Cinematic</h3>
+                    <p>Choose between hyper-realistic footage or artistic cinematic styles.</p>
+                </div>
+                <div class="quality-item">
+                    <div class="quality-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>10 Seconds to 30 Minutes</h3>
+                    <p>Create short clips or full-length videos with our flexible duration options.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2>Contact Us</h2>
+                <p>Get in touch with our team for any inquiries</p>
+            </div>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h4>Name</h4>
+                        <p>MUHAMMAD MOOSA KHAN</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h4>Phone</h4>
+                        <p>03324526020</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h4>Email</h4>
+                        <p>karachieditorz@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-play-circle"></i>
+                AI<span>VideoGen</span>
+            </div>
+            <p class="developer">Developed by <span>karachiboyz</span></p>
+        </div>
+    </footer>
+
+    <!-- Generation Modal -->
+    <div class="modal" id="generationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Generate Your AI Video</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <form id="videoForm">
+                <div class="form-group">
+                    <label for="videoPrompt">Video Prompt</label>
+                    <textarea class="form-control" id="videoPrompt" rows="4" placeholder="Describe the video you want to generate..."></textarea>
+                </div>
+                <div class="form-group select-group">
+                    <div>
+                        <label for="videoQuality">Video Quality</label>
+                        <select class="form-control" id="videoQuality">
+                            <option value="720p">720p HD</option>
+                            <option value="1080p">1080p Full HD</option>
+                            <option value="4k" selected>4K Ultra HD</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="videoStyle">Video Style</label>
+                        <select class="form-control" id="videoStyle">
+                            <option value="realistic">Realistic</option>
+                            <option value="cinematic" selected>Cinematic</option>
+                            <option value="artistic">Artistic</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="videoDuration">Video Duration</label>
+                    <select class="form-control" id="videoDuration">
+                        <option value="10s">10 Seconds</option>
+                        <option value="30s">30 Seconds</option>
+                        <option value="1m">1 Minute</option>
+                        <option value="5m">5 Minutes</option>
+                        <option value="10m">10 Minutes</option>
+                        <option value="30m">30 Minutes</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn">Generate Video</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        const startBtn = document.getElementById('startBtn');
+        const generationModal = document.getElementById('generationModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const videoForm = document.getElementById('videoForm');
+        const videoPrompt = document.getElementById('videoPrompt');
+        const promptCards = document.querySelectorAll('.prompt-card');
+
+        // Open modal when "Start Generating" button is clicked
+        startBtn.addEventListener('click', () => {
+            generationModal.style.display = 'flex';
+        });
+
+        // Close modal when close button is clicked
+        closeModal.addEventListener('click', () => {
+            generationModal.style.display = 'none';
+        });
+
+        // Close modal when cancel button is clicked
+        cancelBtn.addEventListener('click', () => {
+            generationModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside the modal content
+        window.addEventListener('click', (e) => {
+            if (e.target === generationModal) {
+                generationModal.style.display = 'none';
+            }
+        });
+
+        // Handle form submission
+        videoForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Get form values
+            const prompt = videoPrompt.value;
+            const quality = document.getElementById('videoQuality').value;
+            const style = document.getElementById('videoStyle').value;
+            const duration = document.getElementById('videoDuration').value;
+            
+            // In a real application, you would send this data to your AI video generation API
+            alert(`Video generation started!\n\nPrompt: ${prompt}\nQuality: ${quality}\nStyle: ${style}\nDuration: ${duration}\n\nYour video will be ready shortly.`);
+            
+            // Close the modal
+            generationModal.style.display = 'none';
+            
+            // Reset form
+            videoForm.reset();
+        });
+
+        // Add click event to prompt cards to populate the prompt field
+        promptCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const prompt = card.getAttribute('data-prompt');
+                videoPrompt.value = prompt;
+                generationModal.style.display = 'flex';
+            });
+        });
+    </script>
+</body>
+</html>
